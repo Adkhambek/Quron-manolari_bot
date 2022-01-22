@@ -1,11 +1,16 @@
-const { Telegraf, Markup } = require("telegraf");
+const { Telegraf, session } = require("telegraf");
 const { TOKEN } = require("./config");
 const bot = new Telegraf(TOKEN);
-const { start } = require("./constans");
+const stage = require("./stage");
+
+//Middlewares:
+bot.use(session());
+bot.use(stage.middleware());
+
 // Error Handling
 bot.catch((err, ctx) => {
     console.log(err);
-    return ctx.reply(text.error);
+    return ctx.reply("something wrong");
 });
 
 // For getting photoId:
@@ -16,10 +21,7 @@ bot.catch((err, ctx) => {
 
 // Public
 bot.start((ctx) => {
-    ctx.replyWithPhoto(start.photoId, {
-        parse_mode: "HTML",
-        caption: start.firstTxt,
-    });
+    ctx.scene.enter("STEPS");
 });
 
 bot.on("text", async (ctx) => {
