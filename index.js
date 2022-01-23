@@ -9,7 +9,6 @@ bot.use(stage.middleware());
 
 // Error Handling
 bot.catch((err, ctx) => {
-    console.log(err);
     return ctx.reply("something wrong");
 });
 

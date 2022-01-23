@@ -1,9 +1,9 @@
 const { Markup } = require("telegraf");
 const axios = require("axios");
 const lodash = require("lodash");
-const fs = require("fs");
-const path = require("path");
 const { quranenc, alquran } = require("./config");
+// const fs = require("fs");
+const path = require("path");
 
 exports.getSura = async (currentPage) => {
     let btns = [];
@@ -16,10 +16,16 @@ exports.getSura = async (currentPage) => {
     }
     // let data = fs.readFileSync(path.join(__dirname, "data", "surah.json"));
     // data = JSON.parse(data);
+    const request = await axios.get(alquran);
+    const {
+        data: { data },
+    } = await request;
     for (let i = offset; i < limit; i++) {
-        btns.push(Markup.button.callback(`${data[i].title}`, data[i].index));
+        btns.push(
+            Markup.button.callback(data[i].englishName, `${data[i].number}`)
+        );
         const count = i + 1;
-        text += `${count}. ${data[i].title} (${data[i].titleAr})\n`;
+        text += `${count}. ${data[i].englishName} (${data[i].name})\n`;
     }
     btns = lodash.chunk(btns, 3);
     const back = [
@@ -30,10 +36,12 @@ exports.getSura = async (currentPage) => {
     return { btns, text };
 };
 
-exports.getSuraInfo = (suraNumber) => {
-    let data = fs.readFileSync(path.join(__dirname, "data", "surah.json"));
-    data = JSON.parse(data);
-    const sura = data.find((e) => e.index === suraNumber);
+exports.getSuraInfo = async (suraNumber) => {
+    const request = await axios.get(alquran);
+    const {
+        data: { data },
+    } = await request;
+    const sura = await data.find((e) => e.number === suraNumber);
     return sura;
 };
 
@@ -52,4 +60,8 @@ exports.getAyaTranslation = async (sura, aya) => {
         `${quranenc}/aya/uzbek_sadiq/${sura}/${aya}`
     );
     return request.data;
+};
+
+exports.getAyaImage = (sura, aya) => {
+    return path.join(__dirname, "images", `${sura}_${aya}.png`);
 };

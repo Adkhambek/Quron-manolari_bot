@@ -14,10 +14,10 @@ const steps = new Scenes.WizardScene(
         return ctx.wizard.next();
     },
     async (ctx) => {
-        if (ctx.update.callback_query.data === "start") {
+        const btnValue = ctx.update.callback_query.data;
+        if (btnValue === "start") {
             const page = (ctx.wizard.state.page = 1);
-            const sura = helper.getSura(page);
-
+            const sura = await helper.getSura(page);
             await ctx.editMessageText(sura.text, {
                 parse_mode: "HTML",
                 ...Markup.inlineKeyboard(sura.btns),
@@ -37,7 +37,7 @@ const steps = new Scenes.WizardScene(
                 });
                 return;
             }
-            let { text, btns } = helper.getSura(page);
+            let { text, btns } = await helper.getSura(page);
             ctx.editMessageText(text, {
                 parse_mode: "HTML",
                 ...Markup.inlineKeyboard(btns),
@@ -53,21 +53,24 @@ const steps = new Scenes.WizardScene(
                 });
                 return;
             }
-            let { text, btns } = helper.getSura(page);
+            let { text, btns } = await helper.getSura(page);
             ctx.editMessageText(text, {
                 parse_mode: "HTML",
                 ...Markup.inlineKeyboard(btns),
             });
             return;
         }
+        if (btnValue === "backward") {
+            return;
+        }
         const suraNumber = (ctx.wizard.state.sura = btnValue);
-        const sura = helper.getSuraInfo(suraNumber);
+        const sura = await helper.getSuraInfo(+suraNumber);
         await ctx.editMessageText(
             constant.suraInfoText(
-                sura.title,
-                sura.titleAr,
-                sura.count,
-                sura.place
+                sura.englishName,
+                sura.name,
+                sura.numberOfAyahs,
+                sura.revelationType
             ),
             {
                 parse_mode: "HTML",
@@ -82,7 +85,7 @@ const steps = new Scenes.WizardScene(
     async (ctx) => {
         if (ctx.update.callback_query) {
             const page = ctx.wizard.state.page;
-            const sura = helper.getSura(page);
+            const sura = await helper.getSura(page);
             await ctx.editMessageText(sura.text, {
                 parse_mode: "HTML",
                 ...Markup.inlineKeyboard(sura.btns),
@@ -92,6 +95,8 @@ const steps = new Scenes.WizardScene(
         const aya = (ctx.wizard.state.aya = ctx.message.text);
         const sura = ctx.wizard.state.sura;
         const { result } = await helper.getAyaTranslation(sura, aya);
+        const image = helper.getAyaImage(sura, aya);
+        await ctx.replyWithPhoto({ source: image });
         await ctx.replyWithAudio(`${islomUz}/quran/${sura}/${aya}.mp3`);
         await ctx.reply(`<b>Oyat tarjimasi:</b>\n\n${result.translation}`, {
             parse_mode: "HTML",
@@ -104,8 +109,25 @@ const steps = new Scenes.WizardScene(
                 }
             );
         }
+        await ctx.reply(
+            "Orqaga qaytish uchun tugmani bosing 👇",
+            Markup.inlineKeyboard([
+                Markup.button.callback("Orqaga qaytish", "backward"),
+            ])
+        );
 
-        return ctx.scene.leave();
+        return ctx.wizard.next();
+    },
+    async (ctx) => {
+        if (ctx.update.callback_query) {
+            const page = (ctx.wizard.state.page = 1);
+            const sura = await helper.getSura(page);
+            await ctx.editMessageText(sura.text, {
+                parse_mode: "HTML",
+                ...Markup.inlineKeyboard(sura.btns),
+            });
+            return ctx.wizard.selectStep(ctx.wizard.cursor - 2);
+        }
     }
 );
 
