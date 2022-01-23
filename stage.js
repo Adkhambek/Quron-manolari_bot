@@ -65,6 +65,7 @@ const steps = new Scenes.WizardScene(
         }
         const suraNumber = (ctx.wizard.state.sura = btnValue);
         const sura = await helper.getSuraInfo(+suraNumber);
+        ctx.wizard.state.suraNum = sura.numberOfAyahs;
         await ctx.editMessageText(
             constant.suraInfoText(
                 sura.englishName,
@@ -92,7 +93,25 @@ const steps = new Scenes.WizardScene(
             });
             return ctx.wizard.back();
         }
-        const aya = (ctx.wizard.state.aya = ctx.message.text);
+        const aya = ctx.message.text;
+        if (aya === "/start") {
+            ctx.scene.enter("STEPS");
+            return ctx.scene.leave;
+        }
+        if (!/^\d+$/.test(aya)) {
+            ctx.reply(
+                "❌ <b>Sondan boshqa qiymatni olmaydi.</b>\n\nIltimos son kiriting!",
+                { parse_mode: "HTML" }
+            );
+            return;
+        }
+        if (aya > ctx.wizard.state.suraNum) {
+            ctx.reply(
+                `❌ <b>Oyatlar soni ${ctx.wizard.state.suraNum}taga teng. Undan oshig' kirita olmaysiz.</b>\n\nIltimos soni to'g'ri kiriting!`,
+                { parse_mode: "HTML" }
+            );
+            return;
+        }
         const sura = ctx.wizard.state.sura;
         const { result } = await helper.getAyaTranslation(sura, aya);
         const image = helper.getAyaImage(sura, aya);
@@ -127,6 +146,13 @@ const steps = new Scenes.WizardScene(
                 ...Markup.inlineKeyboard(sura.btns),
             });
             return ctx.wizard.selectStep(ctx.wizard.cursor - 2);
+        }
+        if (ctx.message.text === "/start") {
+            ctx.scene.enter("STEPS");
+            return ctx.scene.leave();
+        } else {
+            ctx.reply(constant.errorMessage, { parse_mode: "HTML" });
+            return;
         }
     }
 );

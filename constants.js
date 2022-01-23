@@ -5,3 +5,6 @@ exports.SURA_TEXT = "<b>Quyidagi suralardan birini tanlang</b> 👇";
 
 exports.suraInfoText = (title, titleAr, count, place) =>
     `<b>Nomi:</b> ${title} (${titleAr})\n<b>Oyatlar soni:</b> ${count}\n<b>Nozil bo'lgan yeri:</b> ${place}\n\n<b>Qidirayotgan oyatingizni raqamini kiriting:</b>`;
+
+exports.errorMessage =
+    "<b>❌ Noma'lum buyruq!</b>\n\n<i>Siz to'g'ridan-to'g'ri bot chatiga xabar yubordingiz, yoki bot tuzilishi yaratuvchisi tomonidan o'zgartirilgan bo'lishi mumkin.</i>\n\nℹ️ Xabarlarni to'g'ridan-to'g'ri botga yubormang.\n\n<b>/start tugmasini bosib boshidan boshlang</b>";
