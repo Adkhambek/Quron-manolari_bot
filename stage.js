@@ -62,7 +62,7 @@ const steps = new Scenes.WizardScene(
         }
         const suraNumber = (ctx.wizard.state.sura = btnValue);
         const sura = helper.getSuraInfo(suraNumber);
-        await ctx.reply(
+        await ctx.editMessageText(
             constant.suraInfoText(
                 sura.title,
                 sura.titleAr,
@@ -76,7 +76,19 @@ const steps = new Scenes.WizardScene(
                 ]),
             }
         );
-        return ctx.scene.leave();
+        return ctx.wizard.next();
+    },
+    async (ctx) => {
+        const btnValue = ctx.update.callback_query.data;
+        if (btnValue === "back") {
+            const page = ctx.wizard.state.page;
+            const sura = helper.getSura(page);
+            await ctx.editMessageText(sura.text, {
+                parse_mode: "HTML",
+                ...Markup.inlineKeyboard(sura.btns),
+            });
+            return ctx.wizard.back();
+        }
     }
 );
 

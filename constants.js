@@ -4,4 +4,4 @@ exports.START_TEXT =
 exports.SURA_TEXT = "<b>Quyidagi suralardan birini tanlang</b> 👇";
 
 exports.suraInfoText = (title, titleAr, count, place) =>
-    `<b>Nomi:</b> ${title} (${titleAr})\n<b>Oyatlar soni:</b> ${count}\n<b>Nozil bo'lgan yeri:</b> ${place}\n\n<b>Qidirayotgan oyatingiz raqamini kiriting:</b>`;
+    `<b>Nomi:</b> ${title} (${titleAr})\n<b>Oyatlar soni:</b> ${count}\n<b>Nozil bo'lgan yeri:</b> ${place}\n\n<b>Qidirayotgan oyatingizni raqamini kiriting:</b>`;
