@@ -3,8 +3,9 @@ const axios = require("axios");
 const lodash = require("lodash");
 const fs = require("fs");
 const path = require("path");
+const { quranenc, alquran } = require("./config");
 
-exports.getSura = (currentPage) => {
+exports.getSura = async (currentPage) => {
     let btns = [];
     let text = "<b>Suralardan birini tanlang:</b>\n\n";
     let limit = currentPage * 15;
@@ -13,8 +14,8 @@ exports.getSura = (currentPage) => {
         limit = 114;
         offset = 105;
     }
-    let data = fs.readFileSync(path.join(__dirname, "data", "surah.json"));
-    data = JSON.parse(data);
+    // let data = fs.readFileSync(path.join(__dirname, "data", "surah.json"));
+    // data = JSON.parse(data);
     for (let i = offset; i < limit; i++) {
         btns.push(Markup.button.callback(`${data[i].title}`, data[i].index));
         const count = i + 1;
@@ -44,4 +45,11 @@ exports.numberZero = (num) => {
         return "0" + num;
     }
     return num;
+};
+
+exports.getAyaTranslation = async (sura, aya) => {
+    const request = await axios.get(
+        `${quranenc}/aya/uzbek_sadiq/${sura}/${aya}`
+    );
+    return request.data;
 };

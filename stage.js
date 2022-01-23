@@ -1,7 +1,7 @@
 const { Markup, Scenes } = require("telegraf");
 const constant = require("./constants");
 const helper = require("./helper");
-const { audio } = require("./config");
+const { islomUz } = require("./config");
 const steps = new Scenes.WizardScene(
     "STEPS",
     async (ctx) => {
@@ -76,11 +76,11 @@ const steps = new Scenes.WizardScene(
                 ]),
             }
         );
+
         return ctx.wizard.next();
     },
     async (ctx) => {
-        const btnValue = ctx.update.callback_query.data;
-        if (btnValue === "back") {
+        if (ctx.update.callback_query) {
             const page = ctx.wizard.state.page;
             const sura = helper.getSura(page);
             await ctx.editMessageText(sura.text, {
@@ -89,6 +89,23 @@ const steps = new Scenes.WizardScene(
             });
             return ctx.wizard.back();
         }
+        const aya = (ctx.wizard.state.aya = ctx.message.text);
+        const sura = ctx.wizard.state.sura;
+        const { result } = await helper.getAyaTranslation(sura, aya);
+        await ctx.replyWithAudio(`${islomUz}/quran/${sura}/${aya}.mp3`);
+        await ctx.reply(`<b>Oyat tarjimasi:</b>\n\n${result.translation}`, {
+            parse_mode: "HTML",
+        });
+        if (result.footnotes.length) {
+            await ctx.reply(
+                `<b>Oyat izohi:</b>\n\n<i>${result.footnotes}</i>`,
+                {
+                    parse_mode: "HTML",
+                }
+            );
+        }
+
+        return ctx.scene.leave();
     }
 );
 
