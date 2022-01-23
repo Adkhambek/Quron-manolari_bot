@@ -25,7 +25,7 @@ $ cd Quron-manolari_bot
 $ npm install
 ```
 
-📌 Oyat rasmlarini shu yerdan ko'chirib olishingiz mumkin: https://alquran.cloud/download-media
+📌 Oyat rasmlarini shu yerdan ko'chirib olishingiz mumkin: https://alquran.cloud/download-media . Ko'chirib olib uni `images` papka ichiga qo'shing
 
 📌 data papkasi diyarli kerak emas. Keyinchalik apisiz to'liq json faylida qilish uchun olib qoyganman.
 
