@@ -6,7 +6,7 @@ Ma'lumotlarning asosiy qismi [islom.uz](https://islom.uz/) saytidan olingan.
 
 ## Telegram bot
 
-[@uzdomaincheck_bot](https://t.me/uzdomaincheck_bot)
+[@quron_manolari_bot](https://t.me/quron_manolari_bot)
 
 ## Manbaalar
 
